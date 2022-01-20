@@ -1,6 +1,5 @@
-package connectionFactory;
+package model;
 
-import java.beans.Statement;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,8 +11,6 @@ import Vo.DataUser;
 
 public class CreateConnection {
 	Connection connection = null;
-	
-	DataUser user;
 	
 	protected String URL = "jdbc://postgresql:/localhost/datauser";
 	protected String USER = "postgres";
@@ -32,11 +29,12 @@ public class CreateConnection {
 	}
 	
 	public DataUser createUser(DataUser dataUser) throws IOException, ClassNotFoundException{
+		
 		try(Connection connection = CreateConnection();
-			 PreparedStatement preparedStatement = connection.prepareStatement("Insert into datauser(id, email, password)" + "values(?, ?, ?)");){
-			preparedStatement.setInt(1, user.getId());
-			preparedStatement.setString(2, user.getEmail());
-			preparedStatement.setString(3, user.getPassword());
+			 PreparedStatement preparedStatement = connection.prepareStatement("Insert into user(id, email, password)" + "values(?, ?, ?)");){
+			preparedStatement.setInt(1, dataUser.getId());
+			preparedStatement.setString(2, dataUser.getEmail());
+			preparedStatement.setString(3, dataUser.getPassword());
 			System.out.println(preparedStatement);
 			preparedStatement.executeQuery();
 			
@@ -45,6 +43,29 @@ public class CreateConnection {
 		catch(SQLException e) {
 			e.printStackTrace();
 		}
-		return user;	
+		return dataUser;	
 	}
+	
+	public void checkRegisterUser(String email, String password) throws SQLException, ClassNotFoundException{
+		Connection connection = CreateConnection();
+		
+		PreparedStatement statement = connection.prepareStatement("select * from datauser users where users.email=?");
+		ResultSet rs = statement.executeQuery();
+		
+		try {
+		while(rs.next()) {
+			if(rs.getString("password").equals("password")) {
+				DataUser users = new DataUser();
+				users.setEmail(email);
+				users.setPassword(password);
+				System.out.println("Usuário cadastrado com sucesso:" + email);
+			}
+		}
+	}catch(RuntimeException e){
+			e.printStackTrace();
+		}
+	}
+	
 }
+	
+

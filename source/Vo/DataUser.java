@@ -5,7 +5,7 @@ public class DataUser {
 	protected String email;
 	protected String password;
 	
-	DataUser(){}
+	public DataUser(){}
 	
 	DataUser(int id, String email, String password){
 		this.id = id;
