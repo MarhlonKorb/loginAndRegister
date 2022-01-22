@@ -9,36 +9,39 @@ import java.sql.SQLException;
 
 import Vo.DataUser;
 
-public class CreateConnection {
+public class Conectar {
 	Connection connection = null;
 	
-	protected String URL = "jdbc://postgresql:/localhost/datauser";
+	protected String URL = "jdbc:postgresql://localhost:5432/datauser";
 	protected String USER = "postgres";
 	protected String PASSWORD = "masterkey";
 	
-	protected Connection CreateConnection() throws ClassNotFoundException, SQLException {
+	protected Connection getConnection() throws ClassNotFoundException{
 		Class.forName("org.postgresql.Driver");
 		
 		try {
-			Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+			connection = DriverManager.getConnection(URL, USER, PASSWORD);
 			System.out.println("Iniciando conexão...");
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println("erro na conexão");
 		}
-		return connection;	
+		return getConnection();	
 	}
 	
 	public DataUser createUser(DataUser dataUser) throws IOException, ClassNotFoundException{
 		
-		try(Connection connection = CreateConnection();
-			 PreparedStatement preparedStatement = connection.prepareStatement("Insert into user(id, email, password)" + "values(?, ?, ?)");){
+		try(Connection connection = getConnection();
+			 PreparedStatement preparedStatement = connection.prepareStatement("Insert into register( email, password)" + "values(?, ?)" + " where id=?");){
 			preparedStatement.setInt(1, dataUser.getId());
-			preparedStatement.setString(2, dataUser.getEmail());
-			preparedStatement.setString(3, dataUser.getPassword());
-			System.out.println(preparedStatement);
-			preparedStatement.executeQuery();
+			preparedStatement.setString(1, dataUser.getEmail());
+			preparedStatement.setString(2, dataUser.getPassword());
 			
-			connection.close();
+			checkRegisterUser(URL, PASSWORD);
+			if (dataUser.getEmail().equals("email") && dataUser.getPassword().equals("password")) {
+				preparedStatement.executeQuery();
+			System.out.println("Usuário cadastrado com sucesso");
+			connection.close();	
+			}
 		}
 		catch(SQLException e) {
 			e.printStackTrace();
@@ -47,10 +50,10 @@ public class CreateConnection {
 	}
 	
 	public void checkRegisterUser(String email, String password) throws SQLException, ClassNotFoundException{
-		Connection connection = CreateConnection();
+		Connection connection = getConnection();
 		
 		PreparedStatement statement = connection.prepareStatement("SELECT email, password "
-				+ "	FROM public.\"user\";");
+				+ "	FROM public.\"register\";");
 		ResultSet rs = statement.executeQuery();
 		
 		try {
@@ -59,7 +62,7 @@ public class CreateConnection {
 				DataUser users = new DataUser();
 				users.setEmail(email);
 				users.setPassword(password);
-				System.out.println("Usuário cadastrado com sucesso:" + email);
+				System.out.println("Usuário validado com sucesso: " + email);
 			}
 		}
 	}catch(RuntimeException e){
