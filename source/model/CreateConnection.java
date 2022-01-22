@@ -49,7 +49,8 @@ public class CreateConnection {
 	public void checkRegisterUser(String email, String password) throws SQLException, ClassNotFoundException{
 		Connection connection = CreateConnection();
 		
-		PreparedStatement statement = connection.prepareStatement("select * from datauser users where users.email=?");
+		PreparedStatement statement = connection.prepareStatement("SELECT email, password "
+				+ "	FROM public.\"user\";");
 		ResultSet rs = statement.executeQuery();
 		
 		try {

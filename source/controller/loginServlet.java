@@ -32,11 +32,12 @@ public class loginServlet extends HttpServlet {
 			doGet(request, response);
 	}
 	
-	private void register(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException{
+	private void register(HttpServletRequest request, HttpServletResponse response) throws ClassNotFoundException, IOException {
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
-		DataUser user = new DataUser();
+		DataUser user = new DataUser(email, password);
 		connection.createUser(user);
+		response.sendRedirect("register.jsp");
 	}
 
 }

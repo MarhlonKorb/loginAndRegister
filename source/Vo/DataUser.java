@@ -7,7 +7,12 @@ public class DataUser {
 	
 	public DataUser(){}
 	
-	DataUser(int id, String email, String password){
+	public DataUser(String email, String password){
+		this.email = email;
+		this.password = password;
+	}
+	
+	public DataUser(int id, String email, String password){
 		this.id = id;
 		this.email = email;
 		this.password = password;
